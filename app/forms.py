@@ -1,8 +1,7 @@
 # coding: utf-8
 from django import forms
 from app.models import Doctor, Reception
-from app.widgets import CalendarWidget
-from django.contrib.admin import widgets 
+from django.contrib.admin import widgets
 
 
 class ReceptionForm(forms.ModelForm):
