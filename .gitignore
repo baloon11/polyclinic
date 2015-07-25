@@ -1,0 +1,54 @@
+.DS_Store
+*~
+*.swp
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+*.log
+logs/*
+.idea/
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# dev
+.project
+.pydevproject
+*.sublime-workspace
+*.sublime-project
+
+local_settings.py
+
+media/*
+search_index/*
+collected_static/*
+touch-reload
+djapian_spaces/*
+
+# include local files
+!local/*
+celerybeat-schedule
+uwsgi.ini
+
+# dump
+*.sql.gz
