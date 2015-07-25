@@ -1,0 +1,62 @@
+{% extends "index.html" %}
+
+  <title>
+    {% block title %}
+      {{ block.super }},{{doctor.name|safe}}
+    {% endblock %}
+  </title>
+
+  {% block content %}
+      <div class="jumbotron">
+        <p class="lead">
+          Городская поликлиника № 5  предоставляет  широкий комплекс
+          медицинских услуг, который включает в себя диагностику,
+          проведение анализов и лечение всевозможных болезней.
+        </p>
+        <p>Время работы поликлиники: пн - пт с 9:00 до 18:00.</p>
+      </div>
+
+      <div align="center"> Наши врачи </div>
+
+      <div class="row marketing">
+
+        {% for doctor in doctors %}
+          <div class="col-lg-6">
+            {%if forloop.counter0|divisibleby:"2" == True %}
+                  <h4>{{doctor.name|safe}}</h4>
+                  <p>{{doctor.specialization|safe}}</p>
+                  <p>{{doctor.info|safe}}</p>
+                  <p> <a class="btn btn-inverse"
+                       href="{% url 'reception' doctor_id=doctor.id %}">Записаться на прием</a>
+                  </p>
+            {% endif %}
+          </div>
+
+          <div class="col-lg-6">
+            {%if forloop.counter0|divisibleby:"2" == False %}
+                  <h4>{{doctor.name|safe}}</h4>
+                  <p>{{doctor.specialization|safe}}</p>
+                  <p>{{doctor.info|safe}}</p>
+                  <p> <a class="btn btn-inverse"
+                       href="{% url 'reception' doctor_id=doctor.id %}">Записаться на прием</a>
+                  </p>
+            {% endif %}
+          </div>
+
+
+            {% comment %}
+          <div class="col-lg-6">
+            
+                  <h4>{{doctor.name|safe}}</h4>
+                  <p>{{doctor.specialization|safe}}</p>
+                  <p>{{doctor.info|safe}}</p>
+                  <p> <a class="btn btn-inverse"
+                       href="{% url 'reception' doctor_id=doctor.id %}">Записаться на прием</a>
+                  </p>
+          </div>
+            {% endif %}
+
+      {% endcomment %}
+        {% endfor %}
+      </div>
+  {% endblock content %}

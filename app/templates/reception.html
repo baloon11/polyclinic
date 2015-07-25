@@ -1,0 +1,149 @@
+{% extends "index.html" %}
+{% load static %}
+
+  <title>
+    {% block title %}
+      {{ block.super }},{{doctor.name|safe}}, запись на прием
+    {% endblock %}
+  </title>
+
+  {% block content %}
+    <h3>{{doctor.name|safe}}</h3>
+    <p>{{doctor.specialization|safe}}</p>
+    <p>{{doctor.info|safe}}</p>
+
+    {% if curr_date %}
+      <div align="center">
+        <h3>Вы записались на прием<br>
+            на {{curr_date}} {{curr_time}}
+        </h3>
+      </div>
+    {%endif%}
+
+      {%if message %}
+        <div align="center"> 
+          <h3>{{message}}</h3>
+        </div>
+      {%endif%}
+
+    <br><br>
+    <div align="center">
+      <form action="" class="form-inline" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <table class="table table-borderless"> 
+            <tr><th>{{form.date.label}}</th><td>{{form.date}}{{form.date.errors}}<br><br></td></tr>
+            <tr><th>{{form.time.label}}</th>
+            <td>
+                <table class="table table-bordered">
+                  <tr>
+                    <td align="center" valign="center" class="time">9:00</td>
+                    <td align="center" valign="center" class="time">10:00</td>
+                    <td align="center" valign="center" class="time">11:00</td>
+                  </tr>
+                  <tr>
+                    <td align="center" valign="center" class="time">12:00</td>
+                    <td align="center" valign="center" class="time">13:00</td>
+                    <td align="center" valign="center" class="time">14:00</td>
+                  </tr>
+                  <tr>
+                    <td align="center" valign="center" class="time">15:00</td>
+                    <td align="center" valign="center" class="time">16:00</td>
+                    <td align="center" valign="center" class="time">17:00</td>
+                  </tr>
+                </table>
+                {{form.time.errors}}
+            </td></tr>
+            <tr><th> {{form.patient_name.label}}</th><td>{{form.patient_name}}{{form.patient_name.errors}}<br><br></td></tr>
+            <tr><th>{{form.patient_info.label}}</th><td>{{form.patient_info}}{{form.patient_info.errors}}<br><br></td></tr>
+          </table>
+            {{form.time}}
+            <div style="padding-left:20%;"><button id="submit" class="btn btn-success">Запись</button></div>
+          
+        </div>
+      </form>
+    </div>
+  {% endblock content %}
+
+  {% block js %} 
+    <script src="{% static 'jquery-ui/jquery-ui.js' %}" ></script>
+
+    <script type = "text/javascript">
+    $("#id_date").datepicker({dateFormat: 'yy-mm-dd'});
+
+    $(document).ready(function() {
+        //дата по Ajax передается на сервер для сравнения
+        // возвращается список с занятым временем для приема, для сравнения с таблицей
+        var checkUnavailableTime = function() {
+            var date_data = {
+                doctor_id: {{doctor.id}},
+                date_from_ajax: $("input[name=date]").val(),
+                csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").attr('value')
+            }
+            $.ajax({
+                type: 'POST',
+                url: "/date_from_ajax/",
+                data: date_data,
+                dataType: 'json',
+                success: function(response) {
+                    $("td .time").css("background-color", background_color);
+                    $("td .time").css("color", "black");
+                    for (var i in response['time_list']) {
+                        $("td .time").each(function() {
+                            if ($(this).html() == response['time_list'][i]) {
+                                $(this).css("background-color", "grey");
+                            };
+                        });
+                    }
+                }
+            });
+        };
+        //  таблица времени приема
+        var background_color = $("td .time").css("background-color")
+        $("td .time").click(function(event) {
+            event.preventDefault();
+            $("td .time").each(function() {
+                $(this).css("color", "black");
+            });
+            if ($(this).css("background-color") !== "rgb(128, 128, 128)") {
+                $(this).css("color", "#FF00FF");
+                var time = $(this).html();
+                $("#id_time").attr('value', time);
+            } else {
+                $("#id_time").attr('value', '')
+            }
+        });
+        $("td .time").mouseover(function(event) {
+            if ($(this).css("background-color") !== "rgb(128, 128, 128)") {
+                $(this).css("background-color", "#CEF6D8");
+            };
+        }).mouseout(function(event) {
+            if ($(this).css("background-color") !== "rgb(128, 128, 128)") {
+                $(this).css("background-color", background_color);
+            };
+        });
+        // при выборе даты -идет запрос на сервер и возвращаются часы приема, кот уже заняты
+        $("input[name=date]").change(function() {
+            checkUnavailableTime();
+        });
+        // когда приходит сообщение что есть ошибки в заполении формы - 
+        //также идет запрос на сервер и возвращаются часы приема, кот уже заняты
+        if ($(".errorlist").html() !== "" && $("input[name=date]").val() !== "") {
+            checkUnavailableTime();
+        }
+    }); 
+    </script>
+
+  {% endblock %}
+
+  {% block css %} 
+    <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.theme.css' %}">
+  {% endblock %}
+
+
+
+
+
+
+
